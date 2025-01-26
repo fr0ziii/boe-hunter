@@ -29,11 +29,15 @@ async def main():
 		'Check the visa appointment dates. If there is no available date in this month, check the next month.'
 		'If there is no available date in both months, tell me there is no available date.'
 	)
+	print(os.getenv('DEEPSEEK_API_KEY', ''))
+	model = ChatOpenAI(base_url='https://api.deepseek.com/v1', model="deepseek-reasoner", api_key=SecretStr(os.getenv('DEEPSEEK_API_KEY', '')))
+	agent = Agent(task, model, controller=controller, use_vision=False)
 
-	model = ChatOpenAI(model='gpt-4o-mini', api_key=SecretStr(os.getenv('OPENAI_API_KEY', '')))
-	agent = Agent(task, model, controller=controller, use_vision=True)
-
-	result = await agent.run()
+	try:
+		result = await agent.run()
+	except Exception as e:
+		print(f"An error occurred: {e}")
+		return
 
 
 if __name__ == '__main__':
